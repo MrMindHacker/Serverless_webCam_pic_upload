@@ -1,0 +1,62 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+            
+    <div id="camera" style="height:auto;width:auto; text-align:left;"></div>
+    <img src="" alt="" id="imgbox">
+    <!-- <textarea name="a" id="text" cols="30" rows="10"></textarea> -->
+    <input type="button" value="Take a Snap and Upload Picture" id="btPic" 
+        onclick="takeSnapShot()" /> 
+</body>
+
+<script>
+    // CAMERA SETTINGS.
+    datauri = null
+    Webcam.set({
+        width: 400,
+        height: 400,
+        image_format: 'jpeg',
+        jpeg_quality: 100
+    });
+    Webcam.attach('#camera');
+
+    // TAKE A SNAPSHOT.
+    takeSnapShot = function () {
+        Webcam.snap(function (data_uri) {
+            $("#imgbox").attr("src", ''+data_uri);
+            upload_image('arun', data_uri);
+        });
+    }
+
+upload_image = function(name, data_uri){
+    var fd = new FormData();
+    // var files = $('#file')[0].files[0];
+    fd.append('image',data_uri);
+
+    $.ajax({
+        url: 'https://1qazcfp8rg.execute-api.us-east-1.amazonaws.com/default/s3_bucket_upload',
+        type: 'put',
+        data: fd,
+        contentType: false,
+        processData: false,
+        success: function(response){
+            // if(response != 0){
+            //     $("#img").attr("src",response); 
+            //     $(".preview img").show(); // Display image element
+            // }else{
+            //     alert('file not uploaded');
+            // }
+            // $("#text").html(response);
+            alert('File Uploaded Succesfully!\nCan be Found At:\n'+JSON.stringify(response))
+            // window.location.href = response.path.toString()
+        },
+    });
+}
+
+</script>
+
+</html>
